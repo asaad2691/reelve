@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-5">
+  <div class="mb-4">
+    <h2 class="fw-bold">Post Designer</h2>
+    <p class="text-muted">Canva-style canvas with layers, shapes, drawing tools, and export.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-9">
+      <div class="designer-shell">
+        <div class="designer-toolbar">
+          <button class="btn btn-sm btn-outline-light tool-btn active" data-tool="select">Select</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="text">Text</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="image">Image</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="shape">Shape</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="line">Line</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="curve">Curve</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="pen">Pen</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="marker">Marker</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="eraser">Eraser</button>
+        </div>
+
+        <div class="design-canvas" id="design-canvas">
+          <canvas id="draw-layer"></canvas>
+          <div class="layer text-layer" contenteditable="true" style="top:40px;left:40px;">Your Headline</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3">
+      <div class="card p-4 bg-dark text-white border-0">
+        <h5 class="fw-bold">Inspector</h5>
+        <label class="form-label mt-2">Shape</label>
+        <select id="shape-type" class="form-select">
+          <option value="rect" selected>Rectangle</option>
+          <option value="circle">Circle</option>
+          <option value="triangle">Triangle</option>
+          <option value="heart">Heart</option>
+          <option value="star">Star</option>
+          <option value="moon">Moon</option>
+          <option value="diamond">Diamond</option>
+          <option value="hexagon">Hexagon</option>
+          <option value="pentagon">Pentagon</option>
+          <option value="arrow">Arrow</option>
+          <option value="speech">Speech Bubble</option>
+          <option value="cross">Cross</option>
+          <option value="blob">Blob</option>
+          <option value="ring">Ring</option>
+          <option value="burst">Burst</option>
+          <option value="cloud">Cloud</option>
+          <option value="chevron">Chevron</option>
+          <option value="pill">Pill</option>
+          <option value="parallelogram">Parallelogram</option>
+          <option value="ticket">Ticket</option>
+        </select>
+
+        <label class="form-label mt-3">Text Align</label>
+        <div class="d-flex gap-2">
+          <button id="align-left" class="btn btn-sm btn-outline-light">Left</button>
+          <button id="align-center" class="btn btn-sm btn-outline-light">Center</button>
+          <button id="align-right" class="btn btn-sm btn-outline-light">Right</button>
+        </div>
+        <label class="form-label mt-2">Font</label>
+        <select id="font-family" class="form-select">
+          <option value="Poppins" selected>Poppins</option>
+          <option value="Montserrat">Montserrat</option>
+          <option value="Oswald">Oswald</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Bebas Neue">Bebas Neue</option>
+          <option value="Raleway">Raleway</option>
+          <option value="Nunito">Nunito</option>
+          <option value="Rubik">Rubik</option>
+          <option value="Lato">Lato</option>
+          <option value="Fira Sans">Fira Sans</option>
+          <option value="Anton">Anton</option>
+          <option value="DM Serif Display">DM Serif Display</option>
+          <option value="Abril Fatface">Abril Fatface</option>
+          <option value="Pacifico">Pacifico</option>
+          <option value="Source Sans 3">Source Sans 3</option>
+          <option value="Source Serif 4">Source Serif 4</option>
+          <option value="Manrope">Manrope</option>
+          <option value="Work Sans">Work Sans</option>
+          <option value="Archivo">Archivo</option>
+          <option value="Quicksand">Quicksand</option>
+          <option value="Karla">Karla</option>
+          <option value="Josefin Sans">Josefin Sans</option>
+          <option value="Mulish">Mulish</option>
+          <option value="Barlow">Barlow</option>
+          <option value="Zilla Slab">Zilla Slab</option>
+          <option value="Space Grotesk">Space Grotesk</option>
+          <option value="Kanit">Kanit</option>
+          <option value="Cabin">Cabin</option>
+          <option value="Cinzel">Cinzel</option>
+          <option value="Alfa Slab One">Alfa Slab One</option>
+          <option value="Chivo">Chivo</option>
+          <option value="Inter">Inter</option>
+          <option value="Georgia">Georgia</option>
+        </select>
+
+        <label class="form-label mt-3">Font Size</label>
+        <input id="font-size" type="range" class="form-range" min="12" max="140" value="48">
+
+        <label class="form-label mt-3">Text Style</label>
+        <div class="d-flex gap-2">
+          <button id="text-bold" class="btn btn-sm btn-outline-light">Bold</button>
+          <button id="text-italic" class="btn btn-sm btn-outline-light">Italic</button>
+          <button id="text-upper" class="btn btn-sm btn-outline-light">Uppercase</button>
+        </div>
+
+        <label class="form-label mt-3">Text Color</label>
+        <input id="text-color" type="color" class="form-control form-control-color" value="#ffffff">
+
+        <label class="form-label mt-3">Letter Spacing</label>
+        <input id="letter-spacing" type="range" class="form-range" min="0" max="10" value="0">
+
+        <label class="form-label mt-3">Line Height</label>
+        <input id="line-height" type="range" class="form-range" min="0.8" max="2" step="0.1" value="1.2">
+
+        <label class="form-label mt-3">Fill Color</label>
+        <input id="fill-color" type="color" class="form-control form-control-color" value="#3b82f6">
+
+        <label class="form-label mt-3">Stroke Color</label>
+        <input id="stroke-color" type="color" class="form-control form-control-color" value="#0f172a">
+
+        <label class="form-label mt-3">Stroke Width</label>
+        <input id="stroke-width" type="range" class="form-range" min="1" max="20" value="2">
+
+        <label class="form-label mt-3">Rotate</label>
+        <input id="rotate" type="range" class="form-range" min="-180" max="180" value="0">
+
+        <label class="form-label mt-3">Background</label>
+        <input id="bg-color" type="color" class="form-control form-control-color" value="#111827">
+
+        <label class="form-label mt-3">Brush Size</label>
+        <input id="brush-size" type="range" class="form-range" min="2" max="30" value="6">
+
+        <label class="form-label mt-3">Image Size (W x H)</label>
+        <div class="d-flex gap-2">
+          <input id="img-width" class="form-control" placeholder="Width">
+          <input id="img-height" class="form-control" placeholder="Height">
+        </div>
+
+        <div class="form-check mt-3">
+          <input id="draw-on-selection" class="form-check-input" type="checkbox">
+          <label class="form-check-label" for="draw-on-selection">Draw on Selected Layer</label>
+        </div>
+
+        <label class="form-label mt-3">Layer Order</label>
+        <div class="d-flex gap-2">
+          <button id="bring-front" class="btn btn-sm btn-outline-light">Bring Front</button>
+          <button id="send-back" class="btn btn-sm btn-outline-light">Send Back</button>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <input id="image-upload" class="form-control" type="file" accept="image/*">
+          <button id="delete-layer" class="btn btn-outline-danger">Delete Selected</button>
+          <button id="export-post" class="btn btn-primary">Export PNG</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="{{ url_for('static', filename='js/post_designer.js') }}"></script>
+{% endblock %}

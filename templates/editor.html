@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-5">
+  <div class="mb-4">
+    <h2 class="fw-bold">Editor</h2>
+    <p class="text-muted">Upload a video or image, tweak settings with live preview, then export.</p>
+  </div>
+
+  <form id="editor-form" class="row g-4" method="post" action="/process" enctype="multipart/form-data">
+    <div class="col-lg-5">
+      <div class="card p-4 bg-dark text-white border-0">
+        <label class="form-label">Media File</label>
+        <input id="media-input" class="form-control" type="file" name="file" required>
+
+        <label class="form-label mt-3">Mode</label>
+        <select id="mode-select" class="form-select" name="mode">
+          <option value="video" selected>Video</option>
+          <option value="image">Image</option>
+        </select>
+
+        <label class="form-label mt-3">Action</label>
+        <select class="form-select" name="action">
+          <option value="edits" selected>Custom Edits</option>
+          <option value="autocut">AutoCut + Optional Edits</option>
+        </select>
+        <div class="form-text text-muted">AutoCut uses silence detection. You can still add edits in the JSON.</div>
+
+        <label class="form-label mt-3">Template</label>
+        <select id="template-select" class="form-select" name="template">
+          <option value="">None</option>
+          {% for t in templates %}
+            <option value="{{ t.id }}">{{ t.name }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="mt-4">
+          <button class="btn btn-primary w-100" type="submit">Export</button>
+          <div class="form-text text-muted mt-2">Export applies all settings server-side and downloads the file.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card p-4 border-0 shadow-sm">
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <h5 class="fw-bold mb-3">Live Preview</h5>
+            <div class="preview-frame">
+              <video id="video-preview" class="preview-media d-none" controls></video>
+              <img id="image-preview" class="preview-media d-none" alt="Preview">
+              <div id="preview-overlay" class="preview-overlay">Your Brand</div>
+            </div>
+            <div class="form-text text-muted mt-2">Preview uses browser filters. Export applies real edits.</div>
+          </div>
+          <div class="col-lg-5">
+            <h5 class="fw-bold mb-3">Quick Controls</h5>
+            <label class="form-label">Speed</label>
+            <input id="speed" type="range" class="form-range" min="0.5" max="2" step="0.05" value="1">
+
+            <label class="form-label mt-2">Brightness</label>
+            <input id="brightness" type="range" class="form-range" min="0.5" max="1.8" step="0.05" value="1">
+
+            <label class="form-label mt-2">Contrast</label>
+            <input id="contrast" type="range" class="form-range" min="0.6" max="1.6" step="0.05" value="1">
+
+            <label class="form-label mt-2">Saturation</label>
+            <input id="saturation" type="range" class="form-range" min="0" max="2" step="0.05" value="1">
+
+            <label class="form-label mt-2">Blur</label>
+            <input id="blur" type="range" class="form-range" min="0" max="6" step="0.5" value="0">
+
+            <label class="form-label mt-2">Text</label>
+            <input id="text" class="form-control" value="Your Brand">
+
+            <label class="form-label mt-2">Text Size</label>
+            <input id="font-size" type="range" class="form-range" min="24" max="96" step="2" value="48">
+
+            <label class="form-label mt-2">Text Color</label>
+            <input id="text-color" type="color" class="form-control form-control-color" value="#ffffff">
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 border-0 shadow-sm mt-4">
+        <h5 class="fw-bold">Advanced</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Resize (w, h)</label>
+            <input id="resize" class="form-control" placeholder="1080,1920">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Trim (start, end)</label>
+            <input id="trim" class="form-control" placeholder="0,12">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">AutoCut Threshold</label>
+            <input id="silence-threshold" class="form-control" placeholder="0.02">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">AutoCut Min Clip</label>
+            <input id="min-clip" class="form-control" placeholder="1.0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <textarea id="edits-json" class="d-none" name="edits"></textarea>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

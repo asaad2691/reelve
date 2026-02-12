@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-5">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-6">
+      <h2 class="fw-bold">Studio</h2>
+      <p class="text-muted">A professional workspace for daily content creation. Pick a tool and start building.</p>
+      <div class="d-flex gap-3">
+        <a class="btn btn-primary btn-lg" href="/post">Post Designer</a>
+        <a class="btn btn-outline-light btn-lg" href="/video">Video Timeline</a>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="hero-card p-4 rounded-4">
+        <h5 class="text-uppercase text-muted">Workspace Features</h5>
+        <ul class="list-unstyled mt-3">
+          <li>Drag-and-drop layers for posts</li>
+          <li>Timeline clip ordering and trims</li>
+          <li>Live preview controls</li>
+          <li>One-click export</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

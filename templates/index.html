@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container py-5">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h1 class="display-4 fw-bold">Reelve</h1>
+        <p class="lead">Auto-cut, edit, and publish with a clean, modern editor. Build templates once and apply them everywhere.</p>
+        <div class="d-flex gap-3">
+          <a class="btn btn-primary btn-lg" href="/editor">Start Editing</a>
+          <a class="btn btn-outline-light btn-lg" href="/templates">Browse Templates</a>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-card p-4 rounded-4">
+          <h5 class="text-uppercase text-muted">Highlights</h5>
+          <ul class="list-unstyled mt-3">
+            <li>Auto-cut silence for faster edits</li>
+            <li>Modern templates for social-first formats</li>
+            <li>Video + image editing in one place</li>
+            <li>Export ready for TikTok, Reels, Shorts</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5>AutoCut Engine</h5>
+        <p>Detects silent sections and cuts them automatically. Tune your pace with one click.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5>Video Editing</h5>
+        <p>Trim, speed up, resize, and overlay text for clean, branded exports.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <h5>Image Toolkit</h5>
+        <p>Crop, resize, enhance, and style artwork with filters built for social.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

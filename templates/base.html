@@ -1,0 +1,40 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reelve</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/reelve-favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Bebas+Neue&family=DM+Serif+Display&family=Fira+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@400;600;700&family=Nunito:wght@300;400;600;700&family=Oswald:wght@300;400;600&family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&family=Rubik:wght@300;400;600;700&family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:wght@300;400;600;700&family=Manrope:wght@300;400;600;700&family=Work+Sans:wght@300;400;600;700&family=Archivo:wght@300;400;600;700&family=Quicksand:wght@300;400;600;700&family=Karla:wght@300;400;600;700&family=Josefin+Sans:wght@300;400;600;700&family=Mulish:wght@300;400;600;700&family=Barlow:wght@300;400;600;700&family=Zilla+Slab:wght@400;600;700&family=Space+Grotesk:wght@300;400;600;700&family=Kanit:wght@300;400;600;700&family=Cabin:wght@300;400;600;700&family=Cinzel:wght@400;600;700&family=Alfa+Slab+One&family=Chivo:wght@300;400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+          <img src="{{ url_for('static', filename='img/reelve-logo.svg') }}" alt="Reelve" height="28">
+          <span>Reelve</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto gap-3">
+            <li class="nav-item"><a class="nav-link" href="/editor">Editor</a></li>
+            <li class="nav-item"><a class="nav-link" href="/studio">Studio</a></li>
+            <li class="nav-item"><a class="nav-link" href="/post">Post Designer</a></li>
+            <li class="nav-item"><a class="nav-link" href="/video">Video Timeline</a></li>
+            <li class="nav-item"><a class="nav-link" href="/templates">Templates</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="container py-5">
+  <div class="mb-4">
+    <h2 class="fw-bold">Templates</h2>
+    <p class="text-muted">Pick a prebuilt look or build your own. Apply it in the editor with one click.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="row g-4">
+        {% for t in templates %}
+          <div class="col-md-6">
+            <div class="template-card">
+              <div class="template-card__header">
+                <h5 class="mb-0">{{ t.name }}</h5>
+                <span class="badge text-bg-dark">Video + Image</span>
+              </div>
+              <div class="template-card__body">
+                <div class="template-chip">Speed: {{ t.config.video.speed | default(1.0) }}</div>
+                <div class="template-chip">Brightness: {{ t.config.video.brightness | default(1.0) }}</div>
+                <div class="template-chip">Contrast: {{ t.config.video.contrast | default(1.0) }}</div>
+                <div class="template-chip">Text: {{ t.config.video.text | default("None") }}</div>
+              </div>
+              <div class="template-card__footer">
+                <a class="btn btn-outline-light btn-sm" href="/editor?template={{ t.id }}">Use in Editor</a>
+                <button class="btn btn-primary btn-sm copy-config" data-config='{{ t.config | tojson }}'>Copy Config</button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card p-4 bg-dark text-white border-0">
+        <h5 class="fw-bold">Create Template</h5>
+        <form id="template-form">
+          <label class="form-label">Name</label>
+          <input class="form-control" name="name" required>
+
+          <label class="form-label mt-3">Config (JSON)</label>
+          <textarea class="form-control" name="config" rows="10">{
+  "video": {
+    "resize": [1080, 1920],
+    "speed": 1.05,
+    "text": "@brand",
+    "brightness": 1.1
+  },
+  "image": {
+    "resize": [1080, 1080],
+    "filter": "vivid"
+  }
+}</textarea>
+          <button class="btn btn-primary mt-3" type="submit">Save Template</button>
+          <div id="template-message" class="small mt-2"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

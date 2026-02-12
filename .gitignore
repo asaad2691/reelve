@@ -1,0 +1,4 @@
+﻿# Ignore runtime media
+uploads/
+outputs/
+.env
