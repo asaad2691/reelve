@@ -2,3 +2,7 @@
 uploads/
 outputs/
 .env
+.venv/
+__pycache__/
+*.pyc
+*_timelineTEMP_MPY_wvf_snd.mp4
