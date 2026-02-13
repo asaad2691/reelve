@@ -1,36 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="container py-5">
-  <div class="mb-4">
+<section class="container py-4">
+  <div class="mb-3">
     <h2 class="fw-bold">Post Designer</h2>
-    <p class="text-muted">Canva-style canvas with layers, shapes, drawing tools, and export.</p>
+    <p class="text-muted mb-0">Canva-style canvas with layers, shapes, drawing tools, and export.</p>
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-9">
-      <div class="designer-shell">
-        <div class="designer-toolbar">
-          <button class="btn btn-sm btn-outline-light tool-btn active" data-tool="select">Select</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="text">Text</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="image">Image</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="shape">Shape</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="line">Line</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="curve">Curve</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="pen">Pen</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="marker">Marker</button>
-          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="eraser">Eraser</button>
+  <div class="row g-3">
+    <div class="col-lg-3 order-lg-1">
+      <div class="card p-3 bg-dark text-white border-0 designer-sidebar">
+        <h5 class="fw-bold">Inspector</h5>
+
+        <label class="form-label mt-2">Canvas Size</label>
+        <div class="d-grid gap-2">
+          <select id="canvas-preset" class="form-select">
+            <option value="1080,1080">Square (1080x1080)</option>
+            <option value="1080,1350">Portrait (1080x1350)</option>
+            <option value="1080,1920">Story/Reel (1080x1920)</option>
+            <option value="1200,628">Facebook (1200x628)</option>
+            <option value="1920,1080">YouTube (1920x1080)</option>
+            <option value="custom" selected>Custom</option>
+          </select>
+          <div class="d-flex gap-2">
+            <input id="canvas-width" class="form-control" placeholder="Width" value="1080">
+            <input id="canvas-height" class="form-control" placeholder="Height" value="1080">
+          </div>
+          <button id="apply-canvas" class="btn btn-outline-light btn-sm">Apply Size</button>
         </div>
 
-        <div class="design-canvas" id="design-canvas">
-          <canvas id="draw-layer"></canvas>
-          <div class="layer text-layer" contenteditable="true" style="top:40px;left:40px;">Your Headline</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3">
-      <div class="card p-4 bg-dark text-white border-0">
-        <h5 class="fw-bold">Inspector</h5>
-        <label class="form-label mt-2">Shape</label>
+        <label class="form-label mt-3">Shape</label>
         <select id="shape-type" class="form-select">
           <option value="rect" selected>Rectangle</option>
           <option value="circle">Circle</option>
@@ -60,7 +58,8 @@
           <button id="align-center" class="btn btn-sm btn-outline-light">Center</button>
           <button id="align-right" class="btn btn-sm btn-outline-light">Right</button>
         </div>
-        <label class="form-label mt-2">Font</label>
+
+        <label class="form-label mt-3">Font</label>
         <select id="font-family" class="form-select">
           <option value="Poppins" selected>Poppins</option>
           <option value="Montserrat">Montserrat</option>
@@ -154,7 +153,33 @@
         <div class="d-grid gap-2 mt-4">
           <input id="image-upload" class="form-control" type="file" accept="image/*">
           <button id="delete-layer" class="btn btn-outline-danger">Delete Selected</button>
-          <button id="export-post" class="btn btn-primary">Export PNG</button>
+          <button id="export-post" class="btn btn-primary d-none">Export PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-9 order-lg-2">
+      <div class="designer-shell">
+        <div class="designer-toolbar sticky-toolbar">
+          <button class="btn btn-sm btn-outline-light tool-btn active" data-tool="select">Select</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="text">Text</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="image">Image</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="shape">Shape</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="line">Line</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="curve">Curve</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="pen">Pen</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="marker">Marker</button>
+          <button class="btn btn-sm btn-outline-light tool-btn" data-tool="eraser">Eraser</button>
+          <div class="ms-auto d-flex gap-2">
+            <button id="export-post-top" class="btn btn-sm btn-primary">Export PNG</button>
+          </div>
+        </div>
+
+        <div class="design-canvas-wrap">
+          <div class="design-canvas" id="design-canvas">
+            <canvas id="draw-layer"></canvas>
+            <div class="layer text-layer" contenteditable="true" style="top:40px;left:40px;">Your Headline</div>
+          </div>
         </div>
       </div>
     </div>

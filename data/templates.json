@@ -1,1 +1,24 @@
-﻿[]
+[
+  {
+    "id": "example-custom",
+    "name": "example",
+    "config": {
+      "video": {
+        "resize": [
+          1080,
+          1920
+        ],
+        "speed": 1.05,
+        "text": "@brand",
+        "brightness": 1.5
+      },
+      "image": {
+        "resize": [
+          500,
+          500
+        ],
+        "filter": "vivid"
+      }
+    }
+  }
+]

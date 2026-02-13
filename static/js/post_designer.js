@@ -26,8 +26,13 @@ const shapeType = document.getElementById("shape-type");
 const imgWidth = document.getElementById("img-width");
 const imgHeight = document.getElementById("img-height");
 const rotateInput = document.getElementById("rotate");
+const canvasPreset = document.getElementById("canvas-preset");
+const canvasWidth = document.getElementById("canvas-width");
+const canvasHeight = document.getElementById("canvas-height");
+const applyCanvas = document.getElementById("apply-canvas");
 const deleteLayerBtn = document.getElementById("delete-layer");
 const exportBtn = document.getElementById("export-post");
+const exportTop = document.getElementById("export-post-top");
 
 let selectedLayer = null;
 let selectedLayers = [];
@@ -56,6 +61,30 @@ function resizeDrawLayer() {
 
 resizeDrawLayer();
 window.addEventListener("resize", resizeDrawLayer);
+
+function applyCanvasSize(w, h) {
+  if (!w || !h) return;
+  canvas.style.width = `${w}px`;
+  canvas.style.height = `${h}px`;
+  resizeDrawLayer();
+}
+
+applyCanvas?.addEventListener("click", () => {
+  const w = Number(canvasWidth.value);
+  const h = Number(canvasHeight.value);
+  applyCanvasSize(w, h);
+});
+
+canvasPreset?.addEventListener("change", (e) => {
+  const val = e.target.value;
+  if (val === "custom") return;
+  const parts = val.split(",").map((n) => Number(n.trim()));
+  if (parts.length === 2) {
+    canvasWidth.value = parts[0];
+    canvasHeight.value = parts[1];
+    applyCanvasSize(parts[0], parts[1]);
+  }
+});
 
 function setTool(tool) {
   activeTool = tool;
@@ -650,7 +679,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-exportBtn?.addEventListener("click", async () => {
+async function handleExport() {
   const canvasEl = document.getElementById("design-canvas");
   await waitForImages(canvasEl);
   const canvasImage = await html2canvas(canvasEl, { backgroundColor: null, useCORS: true, allowTaint: true });
@@ -658,7 +687,10 @@ exportBtn?.addEventListener("click", async () => {
   link.download = "post.png";
   link.href = canvasImage.toDataURL("image/png");
   link.click();
-});
+}
+
+exportBtn?.addEventListener("click", handleExport);
+exportTop?.addEventListener("click", handleExport);
 
 async function waitForImages(root) {
   const images = Array.from(root.querySelectorAll("img"));
@@ -676,6 +708,7 @@ async function waitForImages(root) {
 // Init
 document.querySelectorAll(".layer").forEach((el) => attachLayerEvents(el));
 canvas.style.setProperty("--canvas-bg", canvas.style.background || "#111827");
+applyCanvasSize(Number(canvasWidth?.value || 1080), Number(canvasHeight?.value || 1080));
 
 function applyShapeClass(el, type) {
   const svg = el.querySelector(".shape-svg");

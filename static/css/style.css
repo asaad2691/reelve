@@ -17,6 +17,9 @@ body {
 
 .navbar {
   background: rgba(10, 12, 18, 0.95) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .hero {
@@ -131,6 +134,29 @@ body {
   border-radius: 18px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   padding: 16px;
+}
+
+.designer-sidebar {
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+}
+
+.sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(11, 13, 18, 0.85);
+  padding: 8px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.design-canvas-wrap {
+  overflow: auto;
+  max-height: calc(100vh - 220px);
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .designer-toolbar {
