@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="container py-4">
+<section id="designer-root" class="container py-4">
   <div class="mb-3">
     <h2 class="fw-bold">Post Designer</h2>
     <p class="text-muted mb-0">Canva-style canvas with layers, shapes, drawing tools, and export.</p>
@@ -8,7 +8,7 @@
 
   <div class="row g-3">
     <div class="col-lg-3 order-lg-1">
-      <div class="card p-3 bg-dark text-white border-0 designer-sidebar">
+      <div class="card p-3 bg-dark text-white border-0 designer-sidebar ui-panel">
         <h5 class="fw-bold">Inspector</h5>
 
         <label class="form-label mt-2">Canvas Size</label>
@@ -160,7 +160,7 @@
 
     <div class="col-lg-9 order-lg-2">
       <div class="designer-shell">
-        <div class="designer-toolbar sticky-toolbar">
+        <div class="designer-toolbar sticky-toolbar ui-toolbar">
           <button class="btn btn-sm btn-outline-light tool-btn active" data-tool="select">Select</button>
           <button class="btn btn-sm btn-outline-light tool-btn" data-tool="text">Text</button>
           <button class="btn btn-sm btn-outline-light tool-btn" data-tool="image">Image</button>
@@ -171,7 +171,7 @@
           <button class="btn btn-sm btn-outline-light tool-btn" data-tool="marker">Marker</button>
           <button class="btn btn-sm btn-outline-light tool-btn" data-tool="eraser">Eraser</button>
           <div class="ms-auto d-flex gap-2">
-            <button id="export-post-top" class="btn btn-sm btn-primary">Export PNG</button>
+            <button id="export-post-top" type="button" class="btn btn-sm btn-primary">Export PNG</button>
           </div>
         </div>
 
@@ -189,5 +189,6 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="{{ url_for('static', filename='js/designer_core.js') }}"></script>
 <script src="{{ url_for('static', filename='js/post_designer.js') }}"></script>
 {% endblock %}

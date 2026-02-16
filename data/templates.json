@@ -20,5 +20,22 @@
         "filter": "vivid"
       }
     }
+  },
+  {
+    "id": "saad-ahmed-custom",
+    "name": "saad ahmed",
+    "config": {
+      "video": {
+        "speed": 1.05,
+        "text": "",
+        "brightness": 0.85,
+        "contrast": 1.2
+      },
+      "image": {
+        "filter": "",
+        "brightness": 0.95,
+        "contrast": 1.15
+      }
+    }
   }
 ]

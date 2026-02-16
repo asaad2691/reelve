@@ -4,24 +4,46 @@ if (templateForm) {
     e.preventDefault();
     const formData = new FormData(templateForm);
     const name = formData.get("name");
-    const configRaw = formData.get("config");
     const message = document.getElementById("template-message");
 
-    try {
-      const config = JSON.parse(configRaw);
-      const res = await fetch("/api/templates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, config }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        message.textContent = "Template saved. Refresh to see it in the list.";
-      } else {
-        message.textContent = data.error || "Failed to save template.";
-      }
-    } catch (err) {
-      message.textContent = "Invalid JSON in config.";
+    const videoW = Number(document.getElementById("tpl-video-w")?.value || 0);
+    const videoH = Number(document.getElementById("tpl-video-h")?.value || 0);
+    const imageW = Number(document.getElementById("tpl-image-w")?.value || 0);
+    const imageH = Number(document.getElementById("tpl-image-h")?.value || 0);
+
+    const config = {
+      video: {
+        resize: videoW && videoH ? [videoW, videoH] : undefined,
+        speed: Number(document.getElementById("tpl-video-speed")?.value || 1),
+        text: document.getElementById("tpl-video-text")?.value || "",
+        brightness: Number(document.getElementById("tpl-video-brightness")?.value || 1),
+        contrast: Number(document.getElementById("tpl-video-contrast")?.value || 1),
+        saturation: Number(document.getElementById("tpl-video-saturation")?.value || 1),
+      },
+      image: {
+        resize: imageW && imageH ? [imageW, imageH] : undefined,
+        filter: document.getElementById("tpl-image-filter")?.value || "",
+        brightness: Number(document.getElementById("tpl-image-brightness")?.value || 1),
+        contrast: Number(document.getElementById("tpl-image-contrast")?.value || 1),
+        saturation: Number(document.getElementById("tpl-image-saturation")?.value || 1),
+      },
+    };
+
+    if (!name) {
+      message.textContent = "Template name is required.";
+      return;
+    }
+
+    const res = await fetch("/api/templates", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, config }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      message.textContent = "Template saved. Refresh to see it in the list.";
+    } else {
+      message.textContent = data.error || "Failed to save template.";
     }
   });
 }
@@ -32,6 +54,7 @@ if (editorForm) {
   const modeSelect = document.getElementById("mode-select");
   const templateSelect = document.getElementById("template-select");
   const editsField = document.getElementById("edits-json");
+  const exportBtn = document.getElementById("editor-export");
 
   const videoPreview = document.getElementById("video-preview");
   const imagePreview = document.getElementById("image-preview");
@@ -62,6 +85,7 @@ if (editorForm) {
   }
 
   function updateOverlay() {
+    if (!overlay) return;
     overlay.textContent = controls.text.value || "";
     overlay.style.fontSize = `${controls.fontSize.value}px`;
     overlay.style.color = controls.textColor.value;
@@ -71,7 +95,29 @@ if (editorForm) {
     const filter = cssFilter();
     videoPreview.style.filter = filter;
     imagePreview.style.filter = filter;
+    const designerCanvas = document.getElementById("ed-design-canvas");
+    if (designerCanvas) {
+      designerCanvas.style.filter = filter;
+    }
     updateOverlay();
+  }
+
+  function applyTextToDesigner() {
+    const canvas = document.getElementById("ed-design-canvas");
+    if (!canvas) return;
+    let target = canvas.querySelector("#brand-text");
+    if (!target) {
+      target = document.createElement("div");
+      target.id = "brand-text";
+      target.className = "layer text-layer";
+      target.contentEditable = "true";
+      target.style.top = "24px";
+      target.style.left = "24px";
+      canvas.appendChild(target);
+    }
+    target.textContent = controls.text.value || target.textContent;
+    target.style.fontSize = `${controls.fontSize.value}px`;
+    target.style.color = controls.textColor.value;
   }
 
   function parsePair(value) {
@@ -84,34 +130,34 @@ if (editorForm) {
   }
 
   function collectEdits() {
+    const safeVal = (el, fallback = "") => (el ? el.value : fallback);
     const edits = {
-      speed: Number(controls.speed.value),
-      brightness: Number(controls.brightness.value),
-      contrast: Number(controls.contrast.value),
-      text: controls.text.value,
-      font_size: Number(controls.fontSize.value),
-      text_color: controls.textColor.value,
+      speed: Number(safeVal(controls.speed, 1)),
+      brightness: Number(safeVal(controls.brightness, 1)),
+      contrast: Number(safeVal(controls.contrast, 1)),
+      saturation: Number(safeVal(controls.saturation, 1)),
+      text: safeVal(controls.text, ""),
+      font_size: Number(safeVal(controls.fontSize, 48)),
+      text_color: safeVal(controls.textColor, "#ffffff"),
     };
 
-    if (Number(controls.blur.value) > 0) {
-      edits.blur = Number(controls.blur.value);
+    if (Number(safeVal(controls.blur, 0)) > 0) {
+      edits.blur = Number(safeVal(controls.blur, 0));
     }
 
-    if (Number(controls.saturation.value) !== 1) {
-      edits.filter = "vivid";
-    }
+    // Keep filter explicit; saturation should not force a filter preset
 
-    const resize = parsePair(controls.resize.value);
+    const resize = parsePair(safeVal(controls.resize, ""));
     if (resize) edits.resize = resize;
 
-    const trim = parsePair(controls.trim.value);
+    const trim = parsePair(safeVal(controls.trim, ""));
     if (trim) edits.trim = trim;
 
-    if (controls.silenceThreshold.value) {
-      edits.silence_threshold = Number(controls.silenceThreshold.value);
+    if (safeVal(controls.silenceThreshold, "")) {
+      edits.silence_threshold = Number(safeVal(controls.silenceThreshold, 0));
     }
-    if (controls.minClip.value) {
-      edits.min_clip = Number(controls.minClip.value);
+    if (safeVal(controls.minClip, "")) {
+      edits.min_clip = Number(safeVal(controls.minClip, 0));
     }
 
     editsField.value = JSON.stringify(edits);
@@ -119,15 +165,63 @@ if (editorForm) {
 
   function showPreview(file) {
     const url = URL.createObjectURL(file);
+    const preview = document.querySelector(".ae-preview");
+    const designerCanvas = document.getElementById("ed-design-canvas");
     if (file.type.startsWith("video")) {
       videoPreview.src = url;
       videoPreview.classList.remove("d-none");
       imagePreview.classList.add("d-none");
+      if (designerCanvas) {
+        designerCanvas.classList.remove("d-none");
+        designerCanvas.style.backgroundImage = "none";
+        videoPreview.addEventListener("loadedmetadata", () => {
+          const w = videoPreview.videoWidth || preview?.clientWidth || 640;
+          const h = videoPreview.videoHeight || preview?.clientHeight || 360;
+          designerCanvas.style.width = `${w}px`;
+          designerCanvas.style.height = `${h}px`;
+          const cw = document.getElementById("ed-canvas-width");
+          const ch = document.getElementById("ed-canvas-height");
+          if (cw && ch) {
+            cw.value = w;
+            ch.value = h;
+          }
+        }, { once: true });
+      }
       modeSelect.value = "video";
     } else {
       imagePreview.src = url;
-      imagePreview.classList.remove("d-none");
+      imagePreview.classList.add("d-none");
       videoPreview.classList.add("d-none");
+      if (designerCanvas) {
+        designerCanvas.classList.remove("d-none");
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          designerCanvas.dataset.source = dataUrl;
+          designerCanvas.style.backgroundImage = `url('${dataUrl}')`;
+          designerCanvas.style.backgroundSize = "contain";
+          designerCanvas.style.backgroundRepeat = "no-repeat";
+          designerCanvas.style.backgroundPosition = "center";
+          // Ensure brand text exists for property bindings
+          applyTextToDesigner();
+        };
+        reader.readAsDataURL(file);
+        // Ensure brand text exists for property bindings
+        const img = new Image();
+        img.onload = () => {
+          const w = img.naturalWidth || preview?.clientWidth || 640;
+          const h = img.naturalHeight || preview?.clientHeight || 360;
+          designerCanvas.style.width = `${w}px`;
+          designerCanvas.style.height = `${h}px`;
+          const cw = document.getElementById("ed-canvas-width");
+          const ch = document.getElementById("ed-canvas-height");
+          if (cw && ch) {
+            cw.value = w;
+            ch.value = h;
+          }
+        };
+        img.src = url;
+      }
       modeSelect.value = "image";
     }
   }
@@ -142,6 +236,7 @@ if (editorForm) {
     el.addEventListener("input", () => {
       updatePreview();
       collectEdits();
+      applyTextToDesigner();
     });
   });
 
@@ -156,6 +251,7 @@ if (editorForm) {
     controls.speed.value = cfg.speed ?? 1;
     controls.brightness.value = cfg.brightness ?? 1;
     controls.contrast.value = cfg.contrast ?? 1;
+    controls.saturation.value = cfg.saturation ?? 1;
     controls.text.value = cfg.text ?? "";
     controls.resize.value = cfg.resize ? cfg.resize.join(",") : "";
     updatePreview();
@@ -180,4 +276,70 @@ if (editorForm) {
 
   updatePreview();
   collectEdits();
+
+  async function exportImageCanvas() {
+    const canvasEl = document.getElementById("ed-design-canvas");
+    if (!canvasEl || !window.html2canvas) return false;
+    const filter = cssFilter();
+    const originalBg = canvasEl.style.backgroundImage;
+    const originalFilter = canvasEl.style.filter;
+    const src = canvasEl.dataset.source;
+    if (src) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+        img.src = src;
+      });
+      const temp = document.createElement("canvas");
+      const w = canvasEl.clientWidth;
+      const h = canvasEl.clientHeight;
+      temp.width = w;
+      temp.height = h;
+      const tctx = temp.getContext("2d");
+      tctx.filter = filter;
+      const scale = Math.min(w / img.width, h / img.height);
+      const drawW = img.width * scale;
+      const drawH = img.height * scale;
+      const dx = (w - drawW) / 2;
+      const dy = (h - drawH) / 2;
+      tctx.drawImage(img, dx, dy, drawW, drawH);
+      canvasEl.style.backgroundImage = `url(${temp.toDataURL("image/png")})`;
+    }
+    canvasEl.style.filter = "none";
+    const images = Array.from(canvasEl.querySelectorAll("img"));
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+      })
+    );
+    const out = await html2canvas(canvasEl, { backgroundColor: null, useCORS: true, allowTaint: true });
+    const link = document.createElement("a");
+    link.download = "image_edit.png";
+    link.href = out.toDataURL("image/png");
+    link.click();
+    canvasEl.style.backgroundImage = originalBg;
+    canvasEl.style.filter = originalFilter;
+    return true;
+  }
+
+  exportBtn?.addEventListener("click", async () => {
+    collectEdits();
+    const hasFile = mediaInput && mediaInput.files && mediaInput.files.length > 0;
+    const isImageMode = modeSelect && modeSelect.value === "image";
+    if (!hasFile) {
+      await exportImageCanvas();
+      return;
+    }
+    if (isImageMode) {
+      await exportImageCanvas();
+      return;
+    }
+    editorForm.submit();
+  });
 }

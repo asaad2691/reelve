@@ -7,6 +7,7 @@ from typing import Dict, Optional, Tuple
 import tempfile
 
 import numpy as np
+import cv2
 from moviepy.editor import (
     AudioFileClip,
     CompositeVideoClip,
@@ -98,9 +99,11 @@ def apply_video_edits(input_path: Path, output_path: Path, edits: Dict, template
     if edits.get("filter") == "vivid":
         edits.setdefault("brightness", 1.1)
         edits.setdefault("contrast", 1.1)
+        edits.setdefault("saturation", 1.15)
     elif edits.get("filter") == "cinematic":
         edits.setdefault("contrast", 1.2)
         edits.setdefault("brightness", 0.98)
+        edits.setdefault("saturation", 0.9)
 
     if "trim" in edits:
         start, end = edits["trim"]
@@ -115,6 +118,16 @@ def apply_video_edits(input_path: Path, output_path: Path, edits: Dict, template
 
     if "brightness" in edits:
         clip = clip.fx(vfx.colorx, float(edits["brightness"]))
+
+    if "saturation" in edits:
+        sat = float(edits["saturation"])
+
+        def _sat_frame(frame):
+            hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV).astype(np.float32)
+            hsv[:, :, 1] = np.clip(hsv[:, :, 1] * sat, 0, 255)
+            return cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2RGB)
+
+        clip = clip.fl_image(_sat_frame)
 
     if "contrast" in edits:
         contrast = float(edits["contrast"])
@@ -161,16 +174,21 @@ def apply_image_edits(input_path: Path, output_path: Path, edits: Dict, template
         img = img.crop(tuple(edits["crop"]))
 
     if edits.get("filter") == "vivid":
-        img = ImageEnhance.Color(img).enhance(1.3)
-        img = ImageEnhance.Contrast(img).enhance(1.15)
+        edits.setdefault("brightness", 1.1)
+        edits.setdefault("contrast", 1.1)
+        edits.setdefault("saturation", 1.15)
     elif edits.get("filter") == "cinematic":
-        img = ImageEnhance.Contrast(img).enhance(1.2)
-        img = ImageEnhance.Color(img).enhance(0.9)
+        edits.setdefault("contrast", 1.2)
+        edits.setdefault("brightness", 0.98)
+        edits.setdefault("saturation", 0.9)
 
+    # Apply in a consistent order to match preview (brightness -> contrast -> saturation)
     if "brightness" in edits:
-        img = ImageEnhance.Brightness(img).enhance(edits["brightness"])
+        img = ImageEnhance.Brightness(img).enhance(float(edits["brightness"]))
     if "contrast" in edits:
-        img = ImageEnhance.Contrast(img).enhance(edits["contrast"])
+        img = ImageEnhance.Contrast(img).enhance(float(edits["contrast"]))
+    if "saturation" in edits:
+        img = ImageEnhance.Color(img).enhance(float(edits["saturation"]))
 
     if edits.get("blur"):
         img = img.filter(ImageFilter.GaussianBlur(radius=float(edits["blur"])))

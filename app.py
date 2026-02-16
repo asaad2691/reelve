@@ -2,12 +2,13 @@
 
 import json
 import os
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Any, Dict
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, after_this_request, jsonify, render_template, request, send_file, url_for
 
 from utils.media import (
     apply_image_edits,
@@ -91,8 +92,9 @@ def process_media():
 
     filename = safe_filename(file.filename)
     ext = Path(filename).suffix.lower()
+    temp_dir = tempfile.TemporaryDirectory()
     upload_id = uuid.uuid4().hex
-    upload_path = UPLOAD_DIR / f"{upload_id}{ext}"
+    upload_path = Path(temp_dir.name) / f"{upload_id}{ext}"
     file.save(upload_path)
 
     mode = request.form.get("mode", "video")
@@ -100,10 +102,13 @@ def process_media():
     template_id = request.form.get("template")
 
     output_name = f"{upload_id}_out{ext if mode == 'image' else '.mp4'}"
-    output_path = OUTPUT_DIR / output_name
+    output_path = Path(temp_dir.name) / output_name
 
+    edits_raw = request.form.get("edits", "{}")
+    if not edits_raw:
+        edits_raw = "{}"
     try:
-        edits = json.loads(request.form.get("edits", "{}"))
+        edits = json.loads(edits_raw)
     except json.JSONDecodeError:
         return jsonify({"error": "Invalid edits JSON"}), 400
 
@@ -124,7 +129,15 @@ def process_media():
     else:
         apply_image_edits(upload_path, output_path, edits, template_id, TEMPLATE_STORE)
 
-    return redirect(url_for("download", filename=output_name))
+    @after_this_request
+    def _cleanup(response):
+        try:
+            temp_dir.cleanup()
+        except Exception:
+            pass
+        return response
+
+    return send_file(output_path, as_attachment=True, download_name=output_name)
 
 
 @app.route("/process-timeline", methods=["POST"])
@@ -138,6 +151,7 @@ def process_timeline():
     except json.JSONDecodeError:
         return jsonify({"error": "Invalid timeline JSON"}), 400
 
+    temp_dir = tempfile.TemporaryDirectory()
     saved_paths = []
     for idx, f in enumerate(files):
         if not f.filename:
@@ -145,7 +159,7 @@ def process_timeline():
         filename = safe_filename(f.filename)
         ext = Path(filename).suffix.lower()
         upload_id = uuid.uuid4().hex
-        upload_path = UPLOAD_DIR / f"{upload_id}_{idx}{ext}"
+        upload_path = Path(temp_dir.name) / f"{upload_id}_{idx}{ext}"
         f.save(upload_path)
         saved_paths.append(upload_path)
 
@@ -153,9 +167,17 @@ def process_timeline():
         return jsonify({"error": "No valid files"}), 400
 
     output_name = f"{uuid.uuid4().hex}_timeline.mp4"
-    output_path = OUTPUT_DIR / output_name
+    output_path = Path(temp_dir.name) / output_name
     stitch_videos(saved_paths, timeline, output_path)
-    return redirect(url_for("download", filename=output_name))
+    @after_this_request
+    def _cleanup(response):
+        try:
+            temp_dir.cleanup()
+        except Exception:
+            pass
+        return response
+
+    return send_file(output_path, as_attachment=True, download_name=output_name)
 
 
 @app.route("/download/<path:filename>")
